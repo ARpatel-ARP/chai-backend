@@ -1,7 +1,8 @@
 // require('dotenv').config({path: './env'})
 import {setServers } from 'node:dns';
 import dotenv from 'dotenv'
-import connectDB from "./db/index.js";
+import connectDB from "./db/db.js";
+import express from "express";
 import { log } from 'node:console';
 
 setServers (['1.1.1.1' , '8.8.8.8']);
@@ -10,6 +11,7 @@ dotenv.config({
     path:'./.env'
 })
 
+const app = express();
 
 
 connectDB()
