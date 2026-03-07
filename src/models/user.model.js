@@ -29,7 +29,7 @@ const userSchema = new Schema(
             type: String, // cloudinary url will be used
             required: true
         },
-        Coverimage: {
+        coverImage: {
             type: String // cloudinary url will be used
             
         },
@@ -51,20 +51,18 @@ const userSchema = new Schema(
     { timestamps: true}
 )
 
-userSchema.pre("save", async function (next) {
-    if (!this.isModified("password")) return next();
-
-        this.password = await bcrypt.hash(this.password, 10)
-        next()
-})
+userSchema.pre("save", async function () {
+    if (!this.isModified("password")) return;
+    this.password = await bcrypt.hash(this.password, 10);
+});
 
 userSchema.methods.isPasswordCorrect = async function (password) {
     return await bcrypt.compare(password, this.password)
     
 }
 
-userSchema.methods.generateAccessToken = function(){
-    jwt.sign(
+userSchema.methods.generateAccessToken = function () {
+    return jwt.sign(   // ✅ added return
         {
             _id: this._id,
             email: this.email,
@@ -77,17 +75,15 @@ userSchema.methods.generateAccessToken = function(){
         }
     )
 }
-userSchema.methods.generateRefreshToken = function(){
-    jwt.sign(
+
+userSchema.methods.generateRefreshToken = function () {
+    return jwt.sign(   // ✅ added return
         {
             _id: this._id,
-            email: this.email,
-            username: this.username,
-            fullname: this.fullname
         },
-        process.env.ACCESS_REFRESH_SECRET,
+        process.env.REFRESH_TOKEN_SECRET,  // ✅ fixed env variable name
         {
-            expiresIn: process.env.ACCESS_REFRESH_EXPIRY
+            expiresIn: process.env.REFRESH_TOKEN_EXPIRY  // ✅ fixed env variable name
         }
     )
 }
